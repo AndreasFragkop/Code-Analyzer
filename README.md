@@ -48,7 +48,7 @@ Open `index.html` in a browser.
 - Each language has regex patterns and keyword lists in `languagePatterns` inside `script.js`.
 - Matches add to a score per language; the highest score wins.
 - Confidence is derived from the top score vs. total score.
-- Extra boosts exist for TypeScript-only syntax and filename hints (e.g., `// main.ts`).
+- Extra boosts exist for TypeScript-only syntax (type annotations, `interface`, `type`, etc.) and filename hints (e.g., `// main.ts`).
 
 ## Notes
 - Detection is heuristic-based and may be incorrect for short or mixed snippets.

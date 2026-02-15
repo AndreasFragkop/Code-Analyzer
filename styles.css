@@ -7,6 +7,10 @@
     --text: #e6e6e8;
     --text-secondary: #a7a7ad;
     --border: #34343a;
+    --code-font-size: 14px;
+    --code-line-height: 21px;
+    --code-padding: 1rem;
+    --line-number-offset: 0px;
 }
 
 * {
@@ -149,14 +153,15 @@ body.light-theme .theme-toggle {
     resize: vertical;
 }
 
+
 .line-numbers {
-    padding: 1rem 0.75rem;
+    padding: calc(var(--code-padding) + var(--line-number-offset)) 0.75rem;
     background: #1f1f22;
     border-right: 1px solid var(--border);
     color: var(--text-secondary);
     font-family: 'Monaco', 'Courier New', monospace;
-    font-size: 0.875rem;
-    line-height: 1.5;
+    font-size: var(--code-font-size);
+    line-height: var(--code-line-height);
     text-align: right;
     user-select: none;
     min-width: 3rem;
@@ -170,12 +175,16 @@ textarea {
     height: 100%;
     background: transparent;
     border: none;
-    padding: 1rem;
+    padding: var(--code-padding);
     color: var(--text);
     font-family: 'Monaco', 'Courier New', monospace;
-    font-size: 0.875rem;
-    line-height: 1.5;
+    font-size: var(--code-font-size);
+    line-height: var(--code-line-height);
+    overflow: hidden;
     resize: none;
+    white-space: pre-wrap;
+    word-break: break-word;
+    box-sizing: border-box;
 }
 
 textarea:focus {
@@ -388,6 +397,22 @@ button {
     border-radius: 8px;
     margin-bottom: 1.5rem;
 }
+
+.language-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.language-logo {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    border-radius: 6px;
+    background: #2b2b2f;
+    border: 1px solid var(--border);
+}
+
 
 .language-name {
     font-size: 1.5rem;

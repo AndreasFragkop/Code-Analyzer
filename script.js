@@ -179,7 +179,13 @@ const languagePatterns = {
             /as\s+\w+/,
             /public\s+\w+:/,
             /private\s+\w+:/,
-            /enum\s+\w+/
+            /enum\s+\w+/,
+            /:\s*[\w<>\[\],\s]+(?=\s*[=;,)])/,
+            /\bimplements\s+\w+/,
+            /\breadonly\b/,
+            /\bkeyof\b/,
+            /\bunknown\b/,
+            /\bnever\b/
         ],
         keywords: ['interface', 'type', 'enum', 'public', 'private', 'protected', 'readonly', 'abstract', 'const', 'let', 'var', 'function', 'class', 'extends', 'implements'],
         fileExtensions: ['.ts', '.tsx']
@@ -260,7 +266,10 @@ const languagePatterns = {
 };
 
 function detectLanguage() {
-    const code = document.getElementById('codeInput').value.trim();
+    const codeInput = document.getElementById('codeInput');
+    const rawCode = codeInput.value;
+    const code = rawCode.trim();
+    const visualLines = getVisualLineCount(codeInput);
     
     if (!code) {
         alert('Please paste some code first!');
@@ -271,13 +280,13 @@ function detectLanguage() {
     document.getElementById('detectBtnText').innerHTML = '<span class="loading"></span>';
     
     setTimeout(() => {
-        const results = analyzeCode(code);
+        const results = analyzeCode(code, rawCode, visualLines);
         displayResults(results);
         document.getElementById('detectBtnText').textContent = 'Analyze Code';
     }, 800);
 }
 
-function analyzeCode(code) {
+function analyzeCode(code, rawCode = code, visualLines = null) {
     const scores = {};
     const detectedFeatures = {};
     const filenameHint = code.match(/^\s*\/\/\s*[\w.\-]+/m)?.[0] || '';
@@ -296,7 +305,11 @@ function analyzeCode(code) {
                     pattern.source.includes('type') ||
                     pattern.source.includes(':') ||
                     pattern.source.includes('enum') ||
-                    pattern.source.includes('as')
+                    pattern.source.includes('as') ||
+                    pattern.source.includes('readonly') ||
+                    pattern.source.includes('keyof') ||
+                    pattern.source.includes('unknown') ||
+                    pattern.source.includes('never')
                 );
                 score += isTsSignal ? 18 : 10;
                 features.push(pattern.toString().slice(1, -1));
@@ -317,8 +330,17 @@ function analyzeCode(code) {
         detectedFeatures[lang] = features.slice(0, 5); // Limit to top 5 features
     }
 
+    const hasTsSignals = /:\s*[\w<>\[\],\s]+(?=\s*[=;,)])|\binterface\b|\btype\b|\benum\b|\bimplements\b|\breadonly\b|\bkeyof\b|\bunknown\b|\bnever\b/.test(code);
+
     if (hasTsHint) {
-        scores.typescript = (scores.typescript || 0) + 20;
+        scores.typescript = (scores.typescript || 0) + 40;
+    }
+
+    if (hasTsSignals) {
+        scores.typescript = (scores.typescript || 0) + 40;
+        if ((scores.typescript || 0) <= (scores.javascript || 0)) {
+            scores.typescript += 30;
+        }
     }
 
     // Get top language
@@ -331,8 +353,8 @@ function analyzeCode(code) {
             language: 'Unknown',
             confidence: 0,
             features: [],
-            lines: code.split('\n').length,
-            chars: code.length
+            lines: visualLines || rawCode.split('\n').length,
+            chars: rawCode.length
         };
     }
 
@@ -345,15 +367,19 @@ function analyzeCode(code) {
         csharp: 'C#',
         javascript: 'JavaScript',
         typescript: 'TypeScript',
-        jsx: 'JSX'
+        jsx: 'JSX',
+        sql: 'SQL',
+        html: 'HTML',
+        css: 'CSS',
+        json: 'JSON'
     };
 
     return {
         language: displayNames[topLang] || (topLang.charAt(0).toUpperCase() + topLang.slice(1)),
         confidence: confidence,
         features: detectedFeatures[topLang],
-        lines: code.split('\n').length,
-        chars: code.length,
+        lines: visualLines || rawCode.split('\n').length,
+        chars: rawCode.length,
         alternatives: sortedLanguages.slice(1, 4).map(([lang, _]) => 
             lang.charAt(0).toUpperCase() + lang.slice(1)
         )
@@ -369,12 +395,36 @@ function displayResults(results) {
     resultContent.style.display = 'block';
     copyBtn.disabled = false;
 
+    const logoMap = {
+        JavaScript: 'images/Js-Logo.png',
+        Python: 'images/Python-Logo.png',
+        Java: 'images/Java-Logo.png',
+        'C++': 'images/ISO_C++_Logo.png',
+        C: 'images/C-Logo.png',
+        'C#': 'images/C%23_Logo.png',
+        Ruby: 'images/Ruby_logo.png',
+        PHP: 'images/PHP-logo.png',
+        Swift: 'images/Swift-Logo.png',
+        Go: 'images/Go-Logo.png',
+        Rust: 'images/Rust-Logo.png',
+        TypeScript: 'images/Typescript_logo.png',
+        Kotlin: 'images/Kotlin_Logo.png',
+        SQL: 'images/Sql_Logo.png',
+        HTML: 'images/HTML-Logo.png',
+        CSS: 'images/CSS-Logo.png',
+        JSON: 'images/JSON_Logo.png',
+        JSX: 'images/JSX-Logo.png'
+    };
+
+    const logoSrc = logoMap[results.language];
+
     resultContent.innerHTML = `
         <div class="language-badge">
-            <div>
+            <div class="language-meta">
                 <div class="language-name">${results.language}</div>
                 <div class="confidence">Confidence: ${results.confidence}%</div>
             </div>
+            ${logoSrc ? `<img class="language-logo" src="${logoSrc}" alt="${results.language} logo">` : ''}
         </div>
 
         ${results.features.length > 0 ? `
@@ -413,6 +463,7 @@ function escapeHtml(text) {
     div.textContent = text;
     return div.innerHTML;
 }
+
 
 function clearAll() {
     document.getElementById('codeInput').value = '';
@@ -454,7 +505,7 @@ document.getElementById('codeInput').addEventListener('keydown', (e) => {
 function updateLineNumbers() {
     const input = document.getElementById('codeInput');
     const lineNumbers = document.getElementById('lineNumbers');
-    const lineCount = input.value.split('\n').length || 1;
+    const lineCount = getVisualLineCount(input);
     let lines = '';
 
     for (let i = 1; i <= lineCount; i += 1) {
@@ -471,7 +522,48 @@ function syncLineNumbersScroll() {
     lineNumbers.scrollTop = input.scrollTop;
 }
 
-document.getElementById('codeInput').addEventListener('input', updateLineNumbers);
+let lineMeasure;
+
+function getVisualLineCount(textarea) {
+    if (!lineMeasure) {
+        lineMeasure = document.createElement('div');
+        lineMeasure.style.position = 'absolute';
+        lineMeasure.style.visibility = 'hidden';
+        lineMeasure.style.zIndex = '-1';
+        lineMeasure.style.whiteSpace = 'pre-wrap';
+        lineMeasure.style.wordBreak = 'break-word';
+        lineMeasure.style.padding = getComputedStyle(textarea).padding;
+        lineMeasure.style.fontFamily = getComputedStyle(textarea).fontFamily;
+        lineMeasure.style.fontSize = getComputedStyle(textarea).fontSize;
+        lineMeasure.style.lineHeight = getComputedStyle(textarea).lineHeight;
+        lineMeasure.style.width = `${textarea.clientWidth}px`;
+        document.body.appendChild(lineMeasure);
+    }
+
+    lineMeasure.style.width = `${textarea.clientWidth}px`;
+    lineMeasure.textContent = textarea.value || ' ';
+
+    const styles = getComputedStyle(textarea);
+    const lineHeight = parseFloat(styles.lineHeight) || 1;
+    const paddingTop = parseFloat(styles.paddingTop) || 0;
+    const paddingBottom = parseFloat(styles.paddingBottom) || 0;
+    const contentHeight = Math.max(0, lineMeasure.scrollHeight - paddingTop - paddingBottom);
+    const visualLines = Math.max(1, Math.round(contentHeight / lineHeight));
+    return visualLines;
+}
+
+let clearTimer;
+
+document.getElementById('codeInput').addEventListener('input', () => {
+    const input = document.getElementById('codeInput');
+    updateLineNumbers();
+    clearTimeout(clearTimer);
+    if (!input.value.trim()) {
+        clearTimer = setTimeout(() => {
+            clearAll();
+        }, 150);
+    }
+});
 document.getElementById('codeInput').addEventListener('scroll', syncLineNumbersScroll);
 
 const themeToggle = document.getElementById('themeToggle');
