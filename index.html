@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Language Detector Studio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Code Language Detector</h1>
+            <p class="subtitle">Paste your code and instantly identify the programming language</p>
+            <button class="theme-toggle" id="themeToggle" type="button">Light Mode</button>
+        </header>
+
+        <div class="main-content">
+            <div class="panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Detectable Languages</h2>
+                </div>
+                <ul class="language-list">
+                    <li>
+                        <img class="lang-icon" src="images/Js-Logo.png" alt="JavaScript logo">
+                        JavaScript
+                    </li>
+                    <li>
+                        <img class="lang-icon" src="images/Python-Logo.png" alt="Python logo">
+                        Python
+                    </li>
+                    <li>
+                        <img class="lang-icon" src="images/Java-Logo.png" alt="Java logo">
+                        Java
+                    </li>
+                    <li>
+                        <img class="lang-icon" src="images/ISO_C++_Logo.png" alt="C++ logo">
+                        C++
+                    </li>
+                    <li>
+                        <img class="lang-icon" src="images/C-Logo.png" alt="C logo">
+                        C
+                    </li>
+                    <li>
+                        <img class="lang-icon" src="images/C%23_Logo.png" alt="C# logo">
+                        C#
+                    </li>
+                    <li>
+                        <img class="lang-icon" src="images/Ruby_logo.png" alt="Ruby logo">
+                        Ruby
+                    </li>
+                    <li>
+                        <span class="logo-badge php-badge">
+                            <img class="lang-icon" src="images/PHP-logo.png" alt="PHP logo">
+                        </span>
+                        PHP
+                    </li>
+                    <li>
+                        <img class="lang-icon" src="images/Swift-Logo.png" alt="Swift logo">
+                        Swift
+                    </li>
+                    <li>
+                        <img class="lang-icon go-icon" src="images/Go-Logo.png" alt="Go logo">
+                        Go
+                    </li>
+                    <li>
+                        <img class="lang-icon" src="images/Rust-Logo.png" alt="Rust logo">
+                        Rust
+                    </li>
+                    <li>
+                        <img class="lang-icon" src="images/Typescript_logo.png" alt="TypeScript logo">
+                        TypeScript
+                    </li>
+                    <li>
+                        <img class="lang-icon" src="images/Kotlin_Logo.png" alt="Kotlin logo">
+                        Kotlin
+                    </li>
+                    <li>
+                        <span class="logo-badge sql-badge">
+                            <img class="lang-icon" src="images/Sql_Logo.png" alt="SQL logo">
+                        </span>
+                        SQL
+                    </li>
+                    <li>
+                        <img class="lang-icon" src="images/HTML-Logo.png" alt="HTML logo">
+                        HTML
+                    </li>
+                    <li>
+                        <span class="logo-badge css-badge">
+                            <img class="lang-icon" src="images/CSS-Logo.png" alt="CSS logo">
+                        </span>
+                        CSS
+                    </li>
+                    <li>
+                        <img class="lang-icon" src="images/JSON_Logo.png" alt="JSON logo">
+                        JSON
+                    </li>
+                    <li>
+                        <img class="lang-icon" src="images/JSX-Logo.png" alt="JSX logo">
+                        JSX
+                    </li>
+                </ul>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Paste Your Code</h2>
+                </div>
+                <div class="code-input">
+                    <div id="lineNumbers" class="line-numbers">1</div>
+                    <textarea 
+                        id="codeInput" 
+                        placeholder="Paste your code here...&#10;&#10;function example() {&#10;    console.log('Hello World');&#10;}"
+                    ></textarea>
+                </div>
+                <div class="actions">
+                    <button class="btn-detect" onclick="detectLanguage()">
+                        <span id="detectBtnText">Detect Language</span>
+                    </button>
+                    <button class="btn-clear" onclick="clearAll()">Clear</button>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <div class="panel-title-row">
+                        <h2 class="panel-title">Results</h2>
+                        <button class="btn-copy" id="copyResultBtn" type="button" disabled>Copy Result</button>
+                    </div>
+                </div>
+                <div class="result-display">
+                    <div id="emptyState" class="empty-state">
+                        <div class="empty-icon">📝</div>
+                        <p>No code detected yet</p>
+                    </div>
+                    <div id="resultContent" class="result-content" style="display: none;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
