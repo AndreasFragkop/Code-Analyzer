@@ -1,4 +1,4 @@
-# Code Language Detector Studio
+# CodeAnalyzer Studio
 
 A client-side web app that detects the programming language of pasted code using pattern and keyword heuristics.
 
