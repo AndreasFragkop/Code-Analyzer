@@ -293,7 +293,7 @@ function detectLanguage() {
         results.truncatedChars = perfLimit;
         // Render results into the Results panel.
         displayResults(results);
-        document.getElementById('detectBtnText').textContent = 'Analyze Code';
+        document.getElementById('detectBtnText').textContent = 'Detect Language';
     }, 800);
 }
 
