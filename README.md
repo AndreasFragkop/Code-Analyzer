@@ -23,16 +23,6 @@ Code-Analyzer/
      ```
    - Open `http://localhost:8000` in your browser.
 
-## Requirements
-- A modern web browser
-- Optional: Python 3 (only needed if you want to run a local server)
-
-## Browser Support
-- Google Chrome (recent versions)
-- Microsoft Edge (recent versions)
-- Mozilla Firefox (recent versions)
-- Safari (recent versions)
-
 ## How to Use
 1. Paste code into the center editor panel.
 2. Press `Enter` to analyze (use `Shift+Enter` to add a new line), press `Ctrl+Enter`/`Cmd+Enter`, or click `Detect Language`.
@@ -55,11 +45,6 @@ Code-Analyzer/
 - Filename hint detection (e.g., `// main.ts`)
 - Performance guard for large inputs
 - Match explanation (pattern/keyword counts)
-
-## Limitations
-- Detection is heuristic-based and can be inaccurate for short snippets.
-- Mixed-language code blocks can reduce confidence and accuracy.
-- Closely related syntaxes (for example JavaScript/TypeScript/JSX) may be harder to distinguish in minimal samples.
 
 ## Privacy
 - All analysis runs locally in your browser.
